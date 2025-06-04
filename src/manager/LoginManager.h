@@ -2,4 +2,4 @@
 #define LOGINMANAGER_H
 
 
-#endif // LOGINMANAGER_H
+#endif // LOGINMANAGER_H\

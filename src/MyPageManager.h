@@ -1,5 +1,0 @@
-#ifndef MYPAGEMANAGER_H
-#define MYPAGEMANAGER_H
-
-
-#endif // MYPAGEMANAGER_H

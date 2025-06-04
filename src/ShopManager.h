@@ -1,5 +1,0 @@
-#ifndef SHOPMANAGER_H
-#define SHOPMANAGER_H
-
-
-#endif // SHOPMANAGER_H

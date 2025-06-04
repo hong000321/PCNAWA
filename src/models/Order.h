@@ -1,0 +1,206 @@
+#ifndef ORDER_H
+#define ORDER_H
+#include <vector>
+#include <string>
+#include <sstream>
+#include <iostream>
+#include "Product.h"
+#include "Model.h"
+
+struct OrderItem {
+    int pid;
+    int quantity;
+    double unitPrice;  // 구매 당시 가격
+    OrderItem(int id = 0, int quantity = 0, double unitPrice = 0.0)
+        : pid(id), quantity(quantity), unitPrice(unitPrice) {}
+};
+
+struct Order : public Model {
+    int id;
+    int userId;
+    std::vector<OrderItem> items;
+    std::string orderDate;
+
+    // ============== 생성자 정의 ==============
+    Order(int id, int userId, const std::string& date = "")
+    : id(id), userId(userId), orderDate(date) {}
+
+    Order(const Order& other) = default;
+    Order(Order&& other) noexcept = default;
+    
+    // ============== 대입 연산자 정의 ==============
+    // 복사 대입 연산자
+    Order& operator=(const Order& other) {
+        if (this != &other) {
+            id = other.id;
+            userId = other.userId;
+            items = other.items;
+            orderDate = other.orderDate;
+        }
+        return *this;
+    }
+
+    // 이동 대입 연산자
+    Order& operator=(Order&& other) noexcept {
+        if (this != &other) {
+            id = other.id;
+            userId = other.userId;
+            items = std::move(other.items);
+            orderDate = std::move(other.orderDate);
+        }
+        return *this;
+    }
+    
+    // ============== 비교 연산자 정의 ==============
+    bool operator==(const Order& other) const {
+        return id == other.id && userId == other.userId && items == other.items && orderDate == other.orderDate;
+    }
+    bool operator!=(const Order& other) const {
+        return !(*this == other);
+    }
+    // ============== 멤버 함수 정의 ==============
+    double getTotalPrice() const{
+        double totalPrice = 0;
+        for(const OrderItem& item : items){
+            totalPrice += item.unitPrice * item.quantity;
+        }
+        return totalPrice;
+    }
+
+
+    const std::vector<OrderItem>& getItems() const {
+        return items;
+    }
+
+    void clearItems() {
+        items.clear();
+    }
+
+    void addItem(const OrderItem& item) {
+        for (auto& existing : items) {
+            if (existing.pid == item.pid) {
+                existing.quantity += item.quantity;
+                return;
+            }
+        }
+        items.push_back(item);
+    }
+
+    void addItem(int productId, double price, int quantity) {
+        OrderItem newItem(productId, quantity, price);
+        items.push_back(newItem);
+    }
+
+    void removeItem(int productId) {
+        for(auto it = items.begin(); it != items.end(); ++it) {
+            if(it->pid == productId) {
+                items.erase(it);
+                break;
+            }
+        }
+    }
+
+    void updateItem(int productId, double price, int quantity) {
+        for(auto& item : items) {
+            if(item.pid == productId) {
+                item.unitPrice = price;
+                item.quantity = quantity;
+                return;
+            }
+        }
+        addItem(productId, price, quantity);
+    }
+
+    void updateItem(const Product& product, int quantity) {
+        for(auto& item : items) {
+            if(item.pid == product.getId()) {
+                item.unitPrice = product.getPrice();
+                item.quantity = quantity;
+                return;
+            }
+        }
+        // If item not found, add a new one
+        addItem(product.getId(), product.getPrice(), quantity);
+    }
+
+    void setOrderDate(const std::string& date) {
+        orderDate = date;
+    }
+
+    std::string getOrderDate() const {
+        return orderDate;
+    }
+
+    int getId() const {
+        return id;
+    }
+
+    void setId(int newId) {
+        id = newId;
+    }
+
+    int getUserId() const {
+        return userId;
+    }
+
+    void setUserId(int newUserId) {
+        userId = newUserId;
+    }
+
+    // CSV 형식으로 변환하는 메서드
+    std::string toCsv() const {
+        std::ostringstream oss;
+        oss << id << "," << userId << "," << orderDate;
+        for (const auto& item : items) {
+            oss << "," << item.pid << "," << item.quantity << "," << item.unitPrice;
+        }
+        return oss.str();
+    }
+
+    // CSV 형식으로부터 객체를 초기화하는 메서드
+    void fromCsv(const std::string& csv) {
+        std::istringstream ss(csv);
+        std::string token;
+        
+        std::getline(ss, token, ',');
+        id = std::stoi(token);
+        
+        std::getline(ss, token, ',');
+        userId = std::stoi(token);
+        
+        std::getline(ss, orderDate, ',');
+        
+        items.clear();
+        while (std::getline(ss, token, ',')) {
+            OrderItem item;
+            item.pid = std::stoi(token);
+            std::getline(ss, token, ',');
+            item.quantity = std::stoi(token);
+            std::getline(ss, token, ',');
+            item.unitPrice = std::stod(token);
+            items.push_back(item);
+        }
+    }
+    
+    // getString 메서드
+    std::string getMemberValueString() const override{
+        // std::ostringstream를 사용하여 멤버 변수들을 문자열로 변환
+        // 각 멤버 변수는 '|'로 구분되어 출력됩니다.
+        std::ostringstream oss;
+        oss << "|" << std::setw(4) << std::left << id
+            << "|" << std::setw(17) << std::left << userId
+            << "|" << std::setw(25) << std::left << orderDate;
+        return oss.str();
+    }
+
+    std::string getMemberNameString() const override{
+        // 멤버 변수의 이름을 '|'로 구분하여 문자열로 반환
+        // 각 멤버 변수의 이름은 '|'로 구분되어 출력됩니다.
+        std::ostringstream oss;
+        oss << "|" << std::setw(4) << std::left << "ID" 
+            << "|" << std::setw(17) << std::left << "User ID"
+            << "|" << std::setw(25) << std::left << "Order Date";
+        return oss.str();
+    }
+};
+#endif
