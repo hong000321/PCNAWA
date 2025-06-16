@@ -66,5 +66,22 @@ public:
     User* getUserById(int id) {
         return m_userRepo->getById(id);
     }
+
+    User* getUserByName(std::string name) {
+        std::vector<User> users = m_userRepo->getAll();
+        int id = -1;
+        for(auto user : users){
+            if(user.getName()==name){
+                id = user.getId();
+                break;
+            }
+        }
+        return m_userRepo->getById(id);
+        
+    }
+
+    int getNumOfUser(){
+        return m_userRepo->getSize();
+    }
 };
 #endif // USERMANAGER_H

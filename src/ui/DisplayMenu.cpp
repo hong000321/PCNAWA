@@ -10,12 +10,12 @@ void DisplayMenu::display(bool clear) {
     int lineCount = 0;
     std::cout << "Menu Options:" << std::endl;
     for (const auto& menu : m_menu) {
-        lineCount++;
-        if (menu.menuInt < 0 || menu.menuInt >= g_max_cmd_menu_lines) {
-            std::cerr << "Invalid menu option: " << menu.menuInt << std::endl;
+        if (lineCount >= g_max_cmd_menu_lines) {
+            std::cerr << "Invalid menu option: " << lineCount << " " << menu.name << std::endl;
             continue;
         }
-        std::cout << menu.menuInt << ". " << menu.menuStr << std::endl;
+        std::cout << lineCount << ". " << menu.name << std::endl;
+        lineCount++;
 
     }
     for(int i = lineCount; i < g_max_cmd_menu_lines; i++) {

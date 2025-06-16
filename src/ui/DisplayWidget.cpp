@@ -39,3 +39,26 @@ void DisplayWidget::deleteLines(int count) {
         std::cout << "\033[1A\033[K"; // Move cursor up and clear line
     }
 }
+
+
+
+std::string DisplayWidget::getString(const std::string& prompt) {
+    std::string input;
+    std::cout << prompt;
+    std::getline(std::cin, input);
+    return input;
+}
+
+int DisplayWidget::getInt(const std::string& prompt){
+    int input;
+    std::cout << prompt;
+    std::cin >> input;
+    return input;
+}
+
+double DisplayWidget::getDouble(const std::string& prompt) {
+    double input;
+    std::cout << prompt;
+    std::cin >> input;
+    return input;
+}

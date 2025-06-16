@@ -16,6 +16,10 @@ public:
     void displaySeperator();
     void addWidget(DisplayWidget* widget);
     void deleteLines(int count);
+    
+    std::string getString(const std::string& prompt = "Select Num : ");
+    int getInt(const std::string& prompt);
+    double getDouble(const std::string& prompt);
 
 };
 
