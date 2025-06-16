@@ -23,52 +23,56 @@ private:
     DisplayMenu* m_menu = nullptr;
     
     int m_currPage = 0;
+    int m_currId = 0;
+    std::vector<std::vector<std::string>> m_strMet;
 
-    void displayUserList();
+    void updateUserList(int page=-1);
     bool searchUserUI();
     bool updateUserUI();
 
-    bool setPage(int page);
+    bool setUserListByPage(int page);
 
     // select functions
     // select functions
     int prevPage();
-    int searchUser();
-    int modifyUser();
-    int selectUsertById();
+    int selectUserById();
     int selectUserByName();
     int addUser();
     int delUser();
     int nextUserTablePage();
     int prevUserTablePage();
 
-    int searchProduct();
-    int modifyProduct();
-    int addProduct();
-    int delProduct();
-    int nextProductTablePage();
-    int prevProductTablePage();
+    int updateUserPage(int id);
+    int setUserPageById(int id);
+
+    int modifyUser();
+    int searchOrder();
+    int modifyOrder();
+    int addOrder();
+    int delOrder();
 
 
     std::vector<SelectMenu> Select_Main_Page = {
         {"뒤로가기",       [this]() -> int { return prevPage();}},
-        {"유저 선택(이름)",[this]() -> int { return selectUsertById();}},
-        {"유저 선택(ID)",  [this]() -> int { return selectUserByName();}},
+        {"유저 선택(이름)",[this]() -> int { return selectUserByName();}},
+        {"유저 선택(ID)",  [this]() -> int { return selectUserById();}},
         {"유저 추가",      [this]() -> int { return addUser();}},
         {"유저 제거",      [this]() -> int { return delUser();}},
-        {"이전 페이지",    [this]() -> int { return nextUserTablePage();}},
-        {"다음 페이지",    [this]() -> int { return prevUserTablePage();}}
+        {"이전 페이지",    [this]() -> int { return prevUserTablePage();}},
+        {"다음 페이지",    [this]() -> int { return nextUserTablePage();}}
     };
     
     std::vector<SelectMenu> Select_User_Page = {
         {"뒤로가기",        [this]() -> int { return prevPage(); }},
         {"유저 수정",       [this]() -> int { return modifyUser();}},
-        {"주문 검색",       [this]() -> int { return searchProduct(); }},
-        {"주문 수정",       [this]() -> int { return modifyProduct(); }},
-        {"주문 추가",       [this]() -> int { return addProduct(); }},
-        {"주문 제거",       [this]() -> int { return delProduct(); }},
-        {"이전 페이지",     [this]() -> int { return nextProductTablePage(); }},
-        {"다음 페이지",     [this]() -> int { return prevProductTablePage(); }}
+        {"주문 검색",       [this]() -> int { return searchOrder(); }},
+    };
+
+    std::vector<SelectMenu> Select_Order_Page = {
+        {"뒤로가기",        [this]() -> int { return prevPage(); }},
+        {"주문 수정",       [this]() -> int { return modifyOrder(); }},
+        {"주문 추가",       [this]() -> int { return addOrder(); }},
+        {"주문 제거",       [this]() -> int { return delOrder(); }},
     };
 
     std::vector<SelectMenu> Select_Null_Page = {};
@@ -79,8 +83,6 @@ public:
     ~UserManageService() = default;
 
     void start();
-    void updateDisplay();
-    void updateTable(int page=-1);
     void updateMenu(std::vector<SelectMenu>& page)const;
 
 };

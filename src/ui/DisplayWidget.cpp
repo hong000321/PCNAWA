@@ -1,6 +1,7 @@
 #include "DisplayWidget.h"
 #include "UI_GLOBAL.h"
-
+#include <string>
+#include <sstream>
 DisplayWidget::DisplayWidget() {
     // Initialize the widget display
 }
@@ -45,8 +46,15 @@ void DisplayWidget::deleteLines(int count) {
 std::string DisplayWidget::getString(const std::string& prompt) {
     std::string input;
     std::cout << prompt;
+    
+    // 입력 버퍼에 남아있는 개행 문자 제거
+    if (std::cin.peek() == '\n') {
+        std::cin.ignore();
+    }
+    
     std::getline(std::cin, input);
     return input;
+
 }
 
 int DisplayWidget::getInt(const std::string& prompt){

@@ -113,74 +113,68 @@ struct Order : public Model {
 
     void updateItem(const Product& product, int quantity) {
         for(auto& item : items) {
-            if(item.pid == product.getId()) {
-                item.unitPrice = product.getPrice();
+            if(item.pid == product.id) {
+                item.unitPrice = product.price;
                 item.quantity = quantity;
                 return;
             }
         }
         // If item not found, add a new one
-        addItem(product.getId(), product.getPrice(), quantity);
+        addItem(product.id, product.price, quantity);
     }
 
-    void setOrderDate(const std::string& date) {
-        orderDate = date;
-    }
-
-    std::string getOrderDate() const {
-        return orderDate;
-    }
-
-    int getId() const {
-        return id;
-    }
-
-    void setId(int newId) {
-        id = newId;
-    }
-
-    int getUserId() const {
-        return userId;
-    }
-
-    void setUserId(int newUserId) {
-        userId = newUserId;
-    }
 
     // CSV 형식으로 변환하는 메서드
     std::string toCsv() const {
-        std::ostringstream oss;
-        oss << id << "," << userId << "," << orderDate;
-        for (const auto& item : items) {
-            oss << "," << item.pid << "," << item.quantity << "," << item.unitPrice;
+        std::stringstream ss;
+        ss << id << "," << userId << ",";
+
+        for (size_t i = 0; i < items.size(); ++i) {
+            ss << items[i].pid << ":" << items[i].quantity << ":" << items[i].unitPrice;
+            if (i != items.size() - 1)
+                ss << "|";
         }
-        return oss.str();
+
+        ss << "," << orderDate;
+        return ss.str();
     }
 
     // CSV 형식으로부터 객체를 초기화하는 메서드
-    void fromCsv(const std::string& csv) {
-        std::istringstream ss(csv);
+    void fromCsv(const std::string& line) {
+        std::stringstream ss(line);
         std::string token;
-        
+
         std::getline(ss, token, ',');
         id = std::stoi(token);
-        
+
         std::getline(ss, token, ',');
         userId = std::stoi(token);
-        
-        std::getline(ss, orderDate, ',');
-        
+
+        std::getline(ss, token, ',');
         items.clear();
-        while (std::getline(ss, token, ',')) {
-            OrderItem item;
-            item.pid = std::stoi(token);
-            std::getline(ss, token, ',');
-            item.quantity = std::stoi(token);
-            std::getline(ss, token, ',');
-            item.unitPrice = std::stod(token);
-            items.push_back(item);
+        std::stringstream itemStream(token);
+        std::string itemToken;
+        while (std::getline(itemStream, itemToken, '|')) {
+            std::stringstream fieldStream(itemToken);
+            std::string field;
+            int pid, quantity;
+            double price;
+
+            std::getline(fieldStream, field, ':');
+            pid = std::stoi(field);
+            std::getline(fieldStream, field, ':');
+            quantity = std::stoi(field);
+            std::getline(fieldStream, field, ':');
+            price = std::stod(field);
+
+            items.emplace_back(pid, quantity, price);
         }
+
+        std::getline(ss, token, ',');
+        orderDate = token;
     }
+
+
     
     // getString 메서드
     std::string getMemberValueString() const override{

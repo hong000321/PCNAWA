@@ -30,7 +30,7 @@ public:
 
     bool update(const T& item) {
         for (auto& existingItem : m_data) {
-            if (existingItem == item) {
+            if (existingItem.id == item.id) {
                 existingItem = item;
                 saveToFile();
                 return true;
@@ -43,6 +43,7 @@ public:
         for(auto it=m_data.begin(); it!=m_data.end() ; ++it){
             if(it->id==id){
                 m_data.erase(it);
+                saveToFile();
                 return true;
             }
         }
@@ -79,6 +80,10 @@ public:
 
     int getSize(){
         return m_data.size();
+    }
+
+    int lastId(){
+        return m_data.back().id;
     }
 };
 

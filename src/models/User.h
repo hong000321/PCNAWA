@@ -57,35 +57,6 @@ struct User : public Model {
     bool operator!=(const User& other) const {
         return !(*this == other);
     }
-    // ========= 멤버 함수 정의 =========
-    // Getter와 Setter 메서드 정의
-    int getId() const {
-        return id;
-    }
-
-    int getPermissionLevel() const {
-        return permissionLevel;
-    }
-
-    std::string getName() const {
-        return name;
-    }
-
-    std::string getEmail() const {
-        return email;
-    }
-
-    std::string getPassword() const {
-        return password;
-    }
-
-    std::string getDate() const {
-        return date;
-    }
-
-    void setId(int newId) {
-        id = newId;
-    }
 
     bool setPermissionLevel(const std::string& level) {
         if (level == "User") {
@@ -98,30 +69,6 @@ struct User : public Model {
             return false; // 잘못된 권한 레벨
         }
         return true; // 성공적으로 권한 레벨 설정
-    }
-
-    bool setPermissionLevel(int newPermissionLevel) {
-        if (newPermissionLevel < 0 || newPermissionLevel > 2) {
-            return false; // 잘못된 권한 레벨
-        }
-        permissionLevel = newPermissionLevel;
-        return true; // 성공적으로 권한 레벨 설정
-    }
-
-    void setName(const std::string& newName) {
-        name = newName;
-    }
-
-    void setEmail(const std::string& newEmail) {
-        email = newEmail;
-    }
-
-    void setPassword(const std::string& newPassword) {
-        password = newPassword;
-    }
-
-    void setDate(const std::string& newDate) {
-        date = newDate;
     }
     // CSV 형식으로 변환하는 메서드
     std::string toCsv() const {
@@ -169,7 +116,7 @@ struct User : public Model {
         std::ostringstream oss;
         oss << "|" << std::setw(4) << std::left << "ID" 
             << "|" << std::setw(17) << std::left << "Permission Level"
-            << "|" << std::setw(25) << std::left << "Name"
+            << "|" << std::setw(24) << std::left << "이름"
             << "|" << std::setw(30) << std::left << "Email"
             << "|" << std::setw(15) << std::left << "Password"
             << "|" << std::setw(10) << std::left << "Date";

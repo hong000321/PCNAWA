@@ -17,7 +17,7 @@ public:
     void addWidget(DisplayWidget* widget);
     void deleteLines(int count);
     
-    std::string getString(const std::string& prompt = "Select Num : ");
+    std::string getString(const std::string& prompt = "선택 : ");
     int getInt(const std::string& prompt);
     double getDouble(const std::string& prompt);
 

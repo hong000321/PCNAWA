@@ -1,7 +1,7 @@
 #ifndef USERMANAGER_H
 #define USERMANAGER_H
-#include "repository/CsvRepository.h"
-#include "models/User.h"
+#include "../repository/CsvRepository.h"
+#include "../models/User.h"
 #include <memory>
 
 class UserManager{
@@ -28,7 +28,7 @@ public:
     UserManager& operator=(const UserManager&) = delete;
 
 
-    bool registerUser(const User& user){
+    bool addUser(const User& user){
         return m_userRepo->insert(user);
     }
 
@@ -71,10 +71,13 @@ public:
         std::vector<User> users = m_userRepo->getAll();
         int id = -1;
         for(auto user : users){
-            if(user.getName()==name){
-                id = user.getId();
+            if(user.name==name){
+                id = user.id;
                 break;
             }
+        }
+        if(id <= 0){
+            return NULL;
         }
         return m_userRepo->getById(id);
         
@@ -82,6 +85,10 @@ public:
 
     int getNumOfUser(){
         return m_userRepo->getSize();
+    }
+
+    int getLastId(){
+        return m_userRepo->lastId();
     }
 };
 #endif // USERMANAGER_H
