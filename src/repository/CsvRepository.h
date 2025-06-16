@@ -28,7 +28,7 @@ protected:
 
                 T obj;
                 obj.fromCsv(ss.str());
-                m_data.push_back(obj);
+                this->m_data.push_back(obj);
             }
             file.close();
         } else {
@@ -50,7 +50,7 @@ public:
             std::cerr << "Could not open file for writing: " << m_filepath << std::endl;
             return false;
         }
-        for (const auto& item : m_data) {
+        for (const auto& item : this->m_data) {
             file << item.toCsv() << std::endl;
         }
         file.close();
@@ -62,7 +62,7 @@ public:
             std::cerr << "Could not open file for appending: " << m_filepath << std::endl;
             return false;
         }
-        const auto& item = m_data.back();
+        const auto& item = this->m_data.back();
         file << item.toCsv() << std::endl;
         file.close();
         return true;

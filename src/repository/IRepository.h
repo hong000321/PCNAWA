@@ -2,7 +2,7 @@
 #define IREPOSITORY_H
 #include <vector>
 #include <string>
-
+#include <iostream>
 template <typename T>
 class IRepository {
 protected:
@@ -19,11 +19,13 @@ public:
     bool insert(const T& item) {
         m_data.push_back(item);
         appendToFile();
+        return true;
     }
 
     bool bulkInsert(const std::vector<T>& items) {
         m_data.insert(m_data.end(), items.begin(), items.end());
         saveToFile();
+        return true;
     }
 
     bool update(const T& item) {
@@ -71,6 +73,12 @@ public:
     bool removeAll() {
         m_data.clear();
         saveToFile();
+        return true;
+    }
+
+
+    int getSize(){
+        return m_data.size();
     }
 };
 
