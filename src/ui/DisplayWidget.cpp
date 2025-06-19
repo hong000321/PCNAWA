@@ -58,10 +58,17 @@ std::string DisplayWidget::getString(const std::string& prompt) {
 }
 
 int DisplayWidget::getInt(const std::string& prompt){
-    int input;
-    std::cout << prompt;
-    std::cin >> input;
-    return input;
+    while (true) {
+        std::cout << prompt;
+        std::string line;
+        std::getline(std::cin, line);
+        
+        try {
+            return std::stoi(line);
+        } catch (const std::exception&) {
+            std::cout << "잘못된 입력입니다. 숫자를 입력해주세요." << std::endl;
+        }
+    }
 }
 
 double DisplayWidget::getDouble(const std::string& prompt) {

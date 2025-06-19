@@ -50,7 +50,7 @@ public:
         return false;
     }
 
-    std::vector<T>& getAll() {
+    const std::vector<T>& getAll() const {
         return m_data;
     }
 
@@ -76,7 +76,6 @@ public:
         saveToFile();
         return true;
     }
-
 
     int getSize(){
         return m_data.size();

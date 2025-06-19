@@ -13,7 +13,7 @@
 template <typename T>
 class CsvRepository : public IRepository<T> {
 protected:
-    std::string m_filepath;
+    // std::string m_filepath;
     bool loadDataFromFile(const std::string& path) override {
         std::ifstream file(path);
         if (file.is_open()) {

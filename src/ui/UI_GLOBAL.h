@@ -1,3 +1,14 @@
+/**
+ * @file UI_GLOBAL.h
+ * @author Dae O Hong  (hong000321@gmail.com)
+ * @brief text ui 출력을 위한 글로벌 설정값 정의
+ * @version 0.1
+ * @date 2025-06-20
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ * To Do : Singleton Pattern 적용
+ */
 #ifndef UI_GLOBAL_H
 #define UI_GLOBAL_H
 

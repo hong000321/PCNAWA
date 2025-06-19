@@ -62,7 +62,7 @@ void UserManageService::updateMenu(std::vector<SelectMenu>& page) const {
 bool UserManageService::setUserListByPage(int page){
     if (m_table) {
         int max_lines = (g_max_cmd_table_lines-2);
-        int remain_size = m_userManager.getNumOfUser() - page*max_lines;
+        int remain_size = m_userManager.getSize() - page*max_lines;
         if(remain_size>=max_lines){
             remain_size = max_lines;
         }else if(remain_size <= 0){
@@ -95,7 +95,7 @@ bool UserManageService::setUserListByPage(int page){
 // ============================ funcstion of Select ============================
 
 int UserManageService::updateUserPage(int id){
-    User *user = m_userManager.getUserById(id);
+    User *user = m_userManager.getById(id);
     if(user==NULL){
         return FAIL;
     }
@@ -171,14 +171,14 @@ int UserManageService::addUser(){
     std::tm now = *std::localtime(&t);
     std::stringstream ss;
     ss << std::put_time(&now, "%Y-%m-%d");
-    user.date = ss.str();
-    m_userManager.addUser(user);
+    user.registDate = ss.str();
+    m_userManager.add(user);
     return 0;
 }
 
 int UserManageService::delUser(){
     int id = getInt("삭제할 사용자 ID를 입력해주세요 : ");
-    m_userManager.deleteUser(id);
+    m_userManager.removeById(id);
     return 0;
 }
 
@@ -196,7 +196,7 @@ int UserManageService::prevUserTablePage(){
 
 // user page select 
 int UserManageService::modifyUser(){
-    User *origUser = m_userManager.getUserById(m_currId);
+    User *origUser = m_userManager.getById(m_currId);
     User user;
     std::string tmpStr;
     user.id = origUser->id;
@@ -214,8 +214,8 @@ int UserManageService::modifyUser(){
     std::tm now = *std::localtime(&t);
     std::stringstream ss;
     ss << std::put_time(&now, "%Y-%m-%d");
-    user.date = ss.str();
-    m_userManager.updateUser(user);
+    user.registDate = ss.str();
+    m_userManager.update(user);
     return OK;
 }
 

@@ -1,30 +1,43 @@
+/**
+ * @file User.h
+ * @author Dae O Hong (hong000321@gmail.com)
+ * @brief 사용자 정보를 관리하는 User 구조체 정의
+ * @version 0.1
+ * @date 2025-06-20
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #ifndef USER_H
 #define USER_H
 #include <string>
 #include "Model.h"
 
+enum {
+    USER,         // 일반 사용자 권한 (0)
+    ADMIN,        // 관리자 권한 (1) - 상품 편집 가능
+    SUPER_ADMIN   // 최고 관리자 권한 (2) - 사용자 삭제 등 모든 권한
+};
 
 struct User : public Model {
-    int id;
-    int permissionLevel; // 0: User   1: Admin   2: Super Admin
-    std::string name;
-    std::string email;
-    std::string password;
-    std::string date;
+    int id;                      // 사용자 고유 식별자
+    int permissionLevel;         // 권한 레벨 (0: User, 1: Admin, 2: Super Admin)
+    std::string name;            // 사용자 이름
+    std::string email;           // 이메일 주소
+    std::string password;        // 비밀번호
+    std::string registDate;      // 가입일
 
-    // ========= 생성자 정의 =========    
+    // ========= 생성자 정의 =========
     User(int id = 0, int permissionLevel = 0, const std::string& name = "", 
          const std::string& email = "", const std::string& password = "", 
-         const std::string& date = "")
+         const std::string& registDate = "")
         : id(id), permissionLevel(permissionLevel), name(name), 
-          email(email), password(password), date(date) {}
-
-
-    User(const User& other) = default; // 복사 생성자
-    User(User&& other) noexcept = default; // 이동 생성자
+          email(email), password(password), registDate(registDate) {}
+    User(const User& other) = default;
+    User(User&& other) noexcept = default;
     
     // ========= 대입 연산자 정의 =========
-    // 복사 대입 연산자
     User& operator=(const User& other) {
         if (this != &other) {
             id = other.id;
@@ -32,12 +45,11 @@ struct User : public Model {
             name = other.name;
             email = other.email;
             password = other.password;
-            date = other.date;
+            registDate = other.registDate;
         }
         return *this;
     }
 
-    // 이동 대입 연산자
     User& operator=(User&& other) noexcept {
         if (this != &other) {
             id = other.id;
@@ -45,10 +57,11 @@ struct User : public Model {
             name = std::move(other.name);
             email = std::move(other.email);
             password = std::move(other.password);
-            date = std::move(other.date);
+            registDate = std::move(other.registDate);
         }
         return *this;
     }
+
     // ========= 비교 연산자 정의 =========
     bool operator==(const User& other) const {
         return id == other.id;
@@ -58,35 +71,23 @@ struct User : public Model {
         return !(*this == other);
     }
 
-    bool setPermissionLevel(const std::string& level) {
-        if (level == "User") {
-            permissionLevel = 0;
-        } else if (level == "Admin") {
-            permissionLevel = 1;
-        } else if (level == "Super Admin") {
-            permissionLevel = 2;
-        } else {
-            return false; // 잘못된 권한 레벨
-        }
-        return true; // 성공적으로 권한 레벨 설정
-    }
-    // CSV 형식으로 변환하는 메서드
-    std::string toCsv() const {
+    
+    // ============== Model 가상 함수 정의 ==============
+    std::string toCsv() const override{
         return std::to_string(id) + "," + 
                std::to_string(permissionLevel) + "," + 
                name + "," + 
                email + "," + 
                password + "," + 
-               date;
+               registDate;
     }
-    // CSV 형식으로부터 객체를 초기화하는 메서드
-    void fromCsv(const std::string& csv) {
+    
+    void fromCsv(const std::string& csv) override{
         std::istringstream ss(csv);
         std::string token;
         
         std::getline(ss, token, ',');
         id = std::stoi(token);
-        // std::cout << "ID: " << id << std::endl; // 디버깅용 출력
         
         std::getline(ss, token, ',');
         permissionLevel = std::stoi(token);
@@ -94,25 +95,21 @@ struct User : public Model {
         std::getline(ss, name, ',');
         std::getline(ss, email, ',');
         std::getline(ss, password, ',');
-        std::getline(ss, date, ',');
+        std::getline(ss, registDate, ',');
     }
-    // getString 메서드
+
     std::string getMemberValueString() const override{
-        // std::ostringstream를 사용하여 멤버 변수들을 문자열로 변환
-        // 각 멤버 변수는 '|'로 구분되어 출력됩니다.
         std::ostringstream oss;
         oss << "|" << std::setw(4) << std::left << id
             << "|" << std::setw(17) << std::left << permissionLevel
             << "|" << std::setw(25) << std::left << name
             << "|" << std::setw(30) << std::left << email
             << "|" << std::setw(15) << std::left << password
-            << "|" << std::setw(10) << std::left << date;
+            << "|" << std::setw(10) << std::left << registDate;
         return oss.str();
     }
 
     std::string getMemberNameString() const override{
-        // 멤버 변수의 이름을 '|'로 구분하여 문자열로 반환
-        // 각 멤버 변수의 이름은 '|'로 구분되어 출력됩니다.
         std::ostringstream oss;
         oss << "|" << std::setw(4) << std::left << "ID" 
             << "|" << std::setw(17) << std::left << "Permission Level"
@@ -122,5 +119,54 @@ struct User : public Model {
             << "|" << std::setw(10) << std::left << "Date";
         return oss.str();
     }
+
+    // ================== public 고유 함수 정의 ==================
+    /**
+     * @brief 문자열로 권한 레벨 설정
+     * @param level 권한 레벨 문자열 ("User", "Admin", "Super Admin")
+     * @return true 성공적으로 권한 레벨 설정
+     * @return false 잘못된 권한 레벨 문자열
+     */
+    bool setPermissionLevel(const std::string& level) {
+        if (level == "User") {
+            permissionLevel = USER;
+        } else if (level == "Admin") {
+            permissionLevel = ADMIN;
+        } else if (level == "Super Admin") {
+            permissionLevel = SUPER_ADMIN;
+        } else {
+            return false; // 잘못된 권한 레벨
+        }
+        return true; // 성공적으로 권한 레벨 설정
+    }
+
+    /**
+     * @brief 특정 권한 레벨 이상의 권한을 가지고 있는지 확인
+     * @param requiredLevel 필요한 최소 권한 레벨
+     * @return true 필요한 권한을 가지고 있음
+     * @return false 권한 부족
+     */
+    bool hasPermission(int requiredLevel) const {
+        return permissionLevel >= requiredLevel;
+    }
+
+    /**
+     * @brief 상품 편집 권한 확인
+     * @return true ADMIN 이상의 권한을 가지고 있음
+     * @return false 권한 부족
+     */
+    bool canEditProduct() const {
+        return hasPermission(ADMIN);
+    }
+    
+    /**
+     * @brief 사용자 삭제 권한 확인
+     * @return true SUPER_ADMIN 권한을 가지고 있음
+     * @return false 권한 부족
+     */
+    bool canDeleteUser() const {
+        return hasPermission(SUPER_ADMIN);
+    }
+
 };
 #endif // USER_H

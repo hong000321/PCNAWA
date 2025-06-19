@@ -46,7 +46,7 @@ private:
     int updateProductPage(int id);
     int setProductPageById(int id);
     int modifyProduct();
-    int updateStock();
+    int adjustStock();
     int viewProductDetails();
 
     // search functions
@@ -70,7 +70,7 @@ private:
     std::vector<SelectMenu> Select_Product_Page = {
         {"뒤로가기",          [this]() -> int { return prevPage(); }},
         {"상품 수정",         [this]() -> int { return modifyProduct(); }},
-        {"재고 수정",         [this]() -> int { return updateStock(); }},
+        {"재고 수정",         [this]() -> int { return adjustStock(); }},
         {"상품 상세보기",     [this]() -> int { return viewProductDetails(); }}
     };
 

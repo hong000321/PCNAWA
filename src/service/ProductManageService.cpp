@@ -64,7 +64,7 @@ void ProductManageService::updateMenu(std::vector<SelectMenu>& page) const {
 bool ProductManageService::setProductListByPage(int page) {
     if (m_table) {
         int max_lines = (g_max_cmd_table_lines - 2);
-        int remain_size = m_productManager.getNumOfProducts() - page * max_lines;
+        int remain_size = m_productManager.getSize() - page * max_lines;
         if(remain_size >= max_lines) {
             remain_size = max_lines;
         } else if(remain_size <= 0) {
@@ -94,7 +94,7 @@ bool ProductManageService::setProductListByPage(int page) {
 // ============================ functions of Select ============================
 
 int ProductManageService::updateProductPage(int id) {
-    Product *product = m_productManager.getProductById(id);
+    Product *product = m_productManager.getById(id);
     if(product == nullptr) {
         return FAIL;
     }
@@ -105,7 +105,7 @@ int ProductManageService::updateProductPage(int id) {
     m_strMet.push_back({"Price", std::to_string(product->price)});
     m_strMet.push_back({"Stock", std::to_string(product->stock)});
     m_strMet.push_back({"Description", product->description});
-    m_strMet.push_back({"Date", product->date});
+    m_strMet.push_back({"Date", product->createdDate});
     return OK;
 }
 
@@ -173,7 +173,7 @@ int ProductManageService::selectProductByCategory() {
     int cnt = 0;
     for(auto id : products) {
         
-        Product *tmp = m_productManager.getProductById(id);
+        Product *tmp = m_productManager.getById(id);
         printf("%d. [ID:%d] %s - ₩%.2f (재고: %d)\n", 
                 cnt,tmp->id, tmp->name.c_str(), 
                 tmp->price, tmp->stock);
@@ -200,9 +200,9 @@ int ProductManageService::addProduct() {
     std::tm now = *std::localtime(&t);
     std::stringstream ss;
     ss << std::put_time(&now, "%Y-%m-%d");
-    product.date = ss.str();
+    product.createdDate = ss.str();
 
-    if(m_productManager.addProduct(product)) {
+    if(m_productManager.add(product)) {
         printf("상품이 성공적으로 추가되었습니다.\n");
     } else {
         printf("상품 추가에 실패했습니다.\n");
@@ -212,7 +212,7 @@ int ProductManageService::addProduct() {
 
 int ProductManageService::delProduct() {
     int id = getInt("삭제할 상품 ID를 입력해주세요 : ");
-    if(m_productManager.deleteProduct(id)) {
+    if(m_productManager.removeById(id)) {
         printf("상품이 성공적으로 삭제되었습니다.\n");
     } else {
         printf("상품 삭제에 실패했습니다.\n");
@@ -244,7 +244,7 @@ int ProductManageService::showLowStockProducts() {
     
     printf("\n=== 재고 부족 상품 목록 (재고 %d개 이하) ===\n", threshold);
     for(const auto& id : lowStockProducts) {
-        Product *tmp = m_productManager.getProductById(id);
+        Product *tmp = m_productManager.getById(id);
         printf("[ID:%3d] %40s - 재고: %3d개 (카테고리: %4s)\n", 
                tmp->id, tmp->name.c_str(), tmp->stock, tmp->category.c_str());
     }
@@ -258,7 +258,7 @@ int ProductManageService::showInventoryValue() {
     double totalValue = m_productManager.getTotalInventoryValue();
     printf("\n=== 전체 재고 가치 ===\n");
     printf("총 재고 가치: ₩%.2f\n", totalValue);
-    printf("총 상품 수: %d개\n", m_productManager.getNumOfProducts());
+    printf("총 상품 수: %d개\n", m_productManager.getSize());
     getString("계속하려면 Enter를 누르세요...");
     return OK;
 }
@@ -272,29 +272,35 @@ int ProductManageService::searchByPriceRange() {
         return FAIL;
     }
     
-    std::vector<Product*> products = m_productManager.getProductsInPriceRange(minPrice, maxPrice);
-    if(products.empty()) {
+    // ID 리스트로 받기
+    std::vector<int> productIds = m_productManager.getProductsInPriceRange(minPrice, maxPrice);
+    if(productIds.empty()) {
         printf("해당 가격대의 상품이 없습니다.\n");
         return FAIL;
     }
     
     printf("\n=== ₩%.2f ~ ₩%.2f 가격대 상품 목록 ===\n", minPrice, maxPrice);
-    for(size_t i = 0; i < products.size(); ++i) {
-        printf("%zu. [ID:%d] %s - ₩%.2f (재고: %d)\n", 
-               i+1, products[i]->id, products[i]->name.c_str(), 
-               products[i]->price, products[i]->stock);
+    
+    // ID로 실제 Product 객체 조회해서 출력
+    for(size_t i = 0; i < productIds.size(); ++i) {
+        Product* product = m_productManager.getById(productIds[i]);
+        if(product != nullptr) {
+            printf("%zu. [ID:%d] %s - ₩%.2f (재고: %d)\n", 
+                   i+1, product->id, product->name.c_str(), 
+                   product->price, product->stock);
+        }
     }
     
     int select = getInt("선택할 상품 번호 (0: 뒤로가기) : ");
-    if(select > 0 && select <= products.size()) {
-        setProductPageById(products[select-1]->id);
+    if(select > 0 && select <= static_cast<int>(productIds.size())) {
+        setProductPageById(productIds[select-1]);  // ID로 접근
     }
     return OK;
 }
 
 // product page select functions
 int ProductManageService::modifyProduct() {
-    Product *origProduct = m_productManager.getProductById(m_currId);
+    Product *origProduct = m_productManager.getById(m_currId);
     if(origProduct == nullptr) {
         return FAIL;
     }
@@ -322,9 +328,9 @@ int ProductManageService::modifyProduct() {
     std::tm now = *std::localtime(&t);
     std::stringstream ss;
     ss << std::put_time(&now, "%Y-%m-%d");
-    product.date = ss.str();
+    product.createdDate = ss.str();
     
-    if(m_productManager.updateProduct(product)) {
+    if(m_productManager.update(product)) {
         printf("상품이 성공적으로 수정되었습니다.\n");
     } else {
         printf("상품 수정에 실패했습니다.\n");
@@ -332,8 +338,8 @@ int ProductManageService::modifyProduct() {
     return OK;
 }
 
-int ProductManageService::updateStock() {
-    Product *product = m_productManager.getProductById(m_currId);
+int ProductManageService::adjustStock() {
+    Product *product = m_productManager.getById(m_currId);
     if(product == nullptr) {
         return FAIL;
     }
@@ -341,7 +347,7 @@ int ProductManageService::updateStock() {
     printf("현재 재고: %d개\n", product->stock);
     int quantity = getInt("재고 변경량을 입력해주세요 (음수: 감소, 양수: 증가) : ");
     
-    if(m_productManager.updateStock(m_currId, quantity)) {
+    if(m_productManager.adjustStock(m_currId, quantity)) {
         printf("재고가 성공적으로 업데이트되었습니다.\n");
         printf("새로운 재고: %d개\n", product->stock + quantity);
     } else {
@@ -351,7 +357,7 @@ int ProductManageService::updateStock() {
 }
 
 int ProductManageService::viewProductDetails() {
-    Product *product = m_productManager.getProductById(m_currId);
+    Product *product = m_productManager.getById(m_currId);
     if(product == nullptr) {
         return FAIL;
     }
@@ -363,7 +369,7 @@ int ProductManageService::viewProductDetails() {
     printf("가격: ₩%.2f\n", product->price);
     printf("재고: %d개\n", product->stock);
     printf("설명: %s\n", product->description.c_str());
-    printf("등록일: %s\n", product->date.c_str());
+    printf("등록일: %s\n", product->createdDate.c_str());
     printf("=======================\n");
     
     getString("계속하려면 Enter를 누르세요...");
@@ -382,7 +388,7 @@ int ProductManageService::searchByCategory() {
     printf("\n=== %s 카테고리 상품 목록 ===\n", category.c_str());
     int cnt = 0;
     for(auto id : products) {
-        Product *tmp = m_productManager.getProductById(id);
+        Product *tmp = m_productManager.getById(id);
         printf("%d. [ID:%d] %s - ₩%.2f (재고: %d)\n", 
                 cnt+1,tmp->id, tmp->name.c_str(), 
                 tmp->price, tmp->stock);
