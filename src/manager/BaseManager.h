@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include "../repository/IRepository.h"
 
 // 공통 베이스 클래스
 template<typename T>

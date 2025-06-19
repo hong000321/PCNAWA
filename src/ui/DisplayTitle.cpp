@@ -51,3 +51,8 @@ void DisplayTitle::clearTitle() {
     m_title.clear();
     m_title.resize(g_max_cmd_title_lines);
 }
+
+
+int DisplayTitle::getTitleStackSize(){
+    return m_title.size();
+}

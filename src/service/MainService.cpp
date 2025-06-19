@@ -1,7 +1,8 @@
 #include "./service/UserManageService.h"
 #include "./service/ProductManageService.h"
-// #include "./service/ShopService.h"
+#include "./service/ShopService.h"
 #include "./ui/DisplayTitle.h"
+#include "./ui/DisplayTable.h"
 #include "./ui/DisplayMenu.h"
 #include "./ui/DisplayWidget.h"
 #include "./ui/UI_GLOBAL.h"
@@ -11,9 +12,12 @@
 class MainService : public DisplayWidget {
 private:
     DisplayTitle* m_title = nullptr;
+    DisplayTable* m_table = nullptr;
     DisplayMenu* m_menu = nullptr;
     ProductManageService* m_productManageService = nullptr;  // 전역적으로 관리
     UserManageService* m_userManageService = nullptr;
+    ShopService* m_shopService = nullptr;
+    
     // 메뉴 선택 함수들
     int exitProgram() {
         std::cout << "프로그램을 종료합니다.\n";
@@ -37,25 +41,25 @@ private:
         return OK;
     }
     
-    // int startShopService() {
-    //     // ProductManageService가 없으면 먼저 생성
-    //     if (!m_productManageService) {
-    //         m_productManageService = new ProductManageService();
-    //     }
+    int startShopService() {
+        // ProductManageService가 없으면 먼저 생성
+        if (!m_productManageService) {
+            m_productManageService = new ProductManageService();
+        }
         
-    //     // ShopService 생성 시 ProductManager 참조 전달
-    //     ShopService* shopService = new ShopService(&(m_productManageService->getProductManager()));
-    //     shopService->setCurrentUserId(1);  // 기본 사용자 ID 설정 (나중에 로그인 시스템과 연동)
-    //     shopService->start();
-    //     delete shopService;
-    //     return OK;
-    // }
+        // ShopService 생성 시 ProductManager 참조 전달
+        if (!m_shopService) {
+            m_shopService = new ShopService(&(m_productManageService->getProductManager()));
+        }
+        m_shopService->start();
+        return OK;
+    }
 
     std::vector<SelectMenu> Select_Main_Menu = {
         {"프로그램 종료",     [this]() -> int { return exitProgram(); }},
         {"사용자 관리",       [this]() -> int { return startUserManagement(); }},
         {"상품 관리",         [this]() -> int { return startProductManagement(); }},
-        // {"주문 관리",         [this]() -> int { return startShopService(); }}
+        {"쇼핑몰",         [this]() -> int { return startShopService(); }}
     };
 
     void updateMenu() {
@@ -84,14 +88,25 @@ public:
 
         // UI 컴포넌트 초기화
         m_title = new DisplayTitle("관리 시스템");
+        m_table = new DisplayTable();
+        std::vector<std::string> table;
+        table.push_back("______        _   _         _    _\n| ___ \\      | \\ | |       | |  | |\n| |_/ /  ___ |  \\| |  __ _ | |  | |  __ _\n|  __/  / __|| . ` | / _` || |/\\| | / _` |\n| |    | (__ | |\\  || (_| |\\  /\\  /| (_| |\n\\_|     \\___|\\_| \\_/ \\__,_| \\/  \\/  \\__,_|\n");
+        m_table->setTable(table);
         m_menu = new DisplayMenu();
         
         // 위젯 추가
         addWidget(m_title);
+        addWidget(m_table);
         addWidget(m_menu);
     }
 
     ~MainService() {
+        // ShopService 정리
+        if (m_shopService) {
+            delete m_shopService;
+            m_shopService = nullptr;
+        }
+        
         // ProductManageService 정리
         if (m_productManageService) {
             delete m_productManageService;
@@ -128,6 +143,7 @@ public:
         
         m_title->popTitle();
     }
+
 };
 
 int main() {

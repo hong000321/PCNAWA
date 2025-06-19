@@ -86,6 +86,8 @@ public:
     ProductManageService();
     ~ProductManageService() = default;
 
+    ProductManager& getProductManager() { return m_productManager; }
+    const ProductManager& getProductManager() const { return m_productManager; }
     void start();
     void updateMenu(std::vector<SelectMenu>& page) const;
 };

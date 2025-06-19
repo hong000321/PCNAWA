@@ -24,6 +24,7 @@ public:
     void pushTitle(const std::string& newTitle);
     void popTitle();
     void clearTitle();
+    int getTitleStackSize();
 
 
 };

@@ -81,6 +81,8 @@ public:
 
     UserManageService();
     ~UserManageService() = default;
+    UserManager& getUserManager() { return m_userManager; }
+    const UserManager& getUserManager() const { return m_userManager; }
 
     void start();
     void updateMenu(std::vector<SelectMenu>& page)const;
