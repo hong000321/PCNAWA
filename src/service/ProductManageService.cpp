@@ -3,7 +3,7 @@
 #include "../manager/ProductManager.h"
 #include "../repository/CsvRepository.h"
 #include "../repository/IRepository.h"
-#include "../ui/UI_GLOBAL.h"
+#include "../view/UI_GLOBAL.h"
 #include <ctime>
 #include <limits>
 #include <iomanip>
@@ -12,7 +12,6 @@ ProductManageService::ProductManageService() {
     std::unique_ptr<IRepository<Product>> repo(new CsvRepository<Product>("../../data/product_dummy_data.csv"));
     m_productManager = ProductManager(std::move(repo)); // 이동 대입 연산자로 소유권 이전
     m_title = new DisplayTitle("Product Management");
-    
     m_table = new DisplayTable();
     m_menu = new DisplayMenu();
     addWidget(m_title);

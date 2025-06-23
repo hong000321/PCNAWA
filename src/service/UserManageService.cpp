@@ -156,7 +156,8 @@ int UserManageService::selectUserByName(){
     if(user==NULL){
         return FAIL;
     }
-    setUserPageById(user->id);
+    m_currId=user->id;
+    setUserPageById(m_currId);
     return OK;
 }
 

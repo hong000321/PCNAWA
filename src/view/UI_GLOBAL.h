@@ -15,22 +15,30 @@
 #include <vector>
 #include <string>
 #include <functional>
+
 #define WIDGET_CNT 4
+
 extern int g_max_cmd_lines;
 extern int g_max_cmd_width;
 extern int g_max_cmd_title_lines;
 extern int g_max_cmd_table_lines;
 extern int g_max_cmd_menu_lines;
 
+/**
+ * @brief 메뉴 선택 시 반환되는 상태 코드 열거형
+ */
 enum SelectReturn {
     OK,
     BACK,
     FAIL
 };
 
+/**
+ * @brief 메뉴 아이템 구조체
+ */
 struct SelectMenu {
-    std::string name;
-    std::function<int()> action;
+    std::string name;                   ///< 메뉴 이름
+    std::function<int()> action;        ///< 메뉴 실행 함수
 };
 
 #endif // UI_GLOBAL_H

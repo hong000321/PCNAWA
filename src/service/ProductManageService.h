@@ -1,11 +1,22 @@
+/**
+ * @file ProductManageService.h
+ * @author Dae O Hong  (hong000321@gmail.com)
+ * @brief 상품 관리 비즈니스 로직과 UI를 처리하는 서비스 클래스
+ * @version 0.1
+ * @date 2025-06-20
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #ifndef PRODUCTMANAGESERVICE_H
 #define PRODUCTMANAGESERVICE_H
 
 #include "../manager/ProductManager.h"
-#include "../ui/DisplayTitle.h"
-#include "../ui/DisplayMenu.h"
-#include "../ui/DisplayTable.h"
-#include "../ui/DisplayWidget.h"
+#include "../view/DisplayTitle.h"
+#include "../view/DisplayMenu.h"
+#include "../view/DisplayTable.h"
+#include "../view/DisplayWidget.h"
 
 #include <map>
 #include <vector>
@@ -26,31 +37,124 @@ private:
     int m_currId = 0;
     std::vector<std::vector<std::string>> m_strMet;
 
+    /**
+     * @brief 상품 목록을 업데이트하는 메서드
+     * @param page : 페이지 번호 (기본값: -1)
+     */
     void updateProductList(int page = -1);
 
+    /**
+     * @brief 페이지별 상품 목록을 설정하는 메서드
+     * @param page : 페이지 번호
+     * @return bool 성공 여부
+     */
     bool setProductListByPage(int page);
 
-    // select functions for main page
+    // 메인 페이지 선택 함수들
+    /**
+     * @brief 이전 페이지로 이동하는 메서드
+     * @return int 상태 코드
+     */
     int prevPage();
+    
+    /**
+     * @brief ID로 상품을 선택하는 메서드
+     * @return int 상태 코드
+     */
     int selectProductById();
+    
+    /**
+     * @brief 이름으로 상품을 선택하는 메서드
+     * @return int 상태 코드
+     */
     int selectProductByName();
+    
+    /**
+     * @brief 카테고리로 상품을 선택하는 메서드
+     * @return int 상태 코드
+     */
     int selectProductByCategory();
+    
+    /**
+     * @brief 새 상품을 추가하는 메서드
+     * @return int 상태 코드
+     */
     int addProduct();
+    
+    /**
+     * @brief 상품을 삭제하는 메서드
+     * @return int 상태 코드
+     */
     int delProduct();
+    
+    /**
+     * @brief 상품 테이블 다음 페이지로 이동하는 메서드
+     * @return int 상태 코드
+     */
     int nextProductTablePage();
+    
+    /**
+     * @brief 상품 테이블 이전 페이지로 이동하는 메서드
+     * @return int 상태 코드
+     */
     int prevProductTablePage();
+    
+    /**
+     * @brief 재고 부족 상품을 표시하는 메서드
+     * @return int 상태 코드
+     */
     int showLowStockProducts();
+    
+    /**
+     * @brief 재고 총 가치를 표시하는 메서드
+     * @return int 상태 코드
+     */
     int showInventoryValue();
 
-    // product detail page functions
+    // 상품 상세 페이지 함수들
+    /**
+     * @brief 상품 페이지를 업데이트하는 메서드
+     * @param id : 상품 ID
+     * @return int 상태 코드
+     */
     int updateProductPage(int id);
+    
+    /**
+     * @brief ID로 상품 페이지를 설정하는 메서드
+     * @param id : 상품 ID
+     * @return int 상태 코드
+     */
     int setProductPageById(int id);
+    
+    /**
+     * @brief 상품 정보를 수정하는 메서드
+     * @return int 상태 코드
+     */
     int modifyProduct();
+    
+    /**
+     * @brief 재고를 조정하는 메서드
+     * @return int 상태 코드
+     */
     int adjustStock();
+    
+    /**
+     * @brief 상품 상세정보를 보는 메서드
+     * @return int 상태 코드
+     */
     int viewProductDetails();
 
-    // search functions
+    // 검색 함수들
+    /**
+     * @brief 가격 범위로 검색하는 메서드
+     * @return int 상태 코드
+     */
     int searchByPriceRange();
+    
+    /**
+     * @brief 카테고리로 검색하는 메서드
+     * @return int 상태 코드
+     */
     int searchByCategory();
 
     std::vector<SelectMenu> Select_Main_Page = {
@@ -86,9 +190,27 @@ public:
     ProductManageService();
     ~ProductManageService() = default;
 
+    /**
+     * @brief ProductManager 참조를 반환하는 메서드
+     * @return ProductManager& ProductManager 참조
+     */
     ProductManager& getProductManager() { return m_productManager; }
+    
+    /**
+     * @brief ProductManager 상수 참조를 반환하는 메서드
+     * @return const ProductManager& ProductManager 상수 참조
+     */
     const ProductManager& getProductManager() const { return m_productManager; }
+    
+    /**
+     * @brief 서비스를 시작하는 메서드
+     */
     void start();
+    
+    /**
+     * @brief 메뉴를 업데이트하는 메서드
+     * @param page : 메뉴 페이지 벡터 참조
+     */
     void updateMenu(std::vector<SelectMenu>& page) const;
 };
 

@@ -2,7 +2,7 @@
 #include "../models/Order.h"
 #include "../models/Product.h"
 #include "../repository/CsvRepository.h"
-#include "../ui/UI_GLOBAL.h"
+#include "../view/UI_GLOBAL.h"
 #include <ctime>
 #include <iomanip>
 

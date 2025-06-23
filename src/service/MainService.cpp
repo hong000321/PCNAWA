@@ -1,11 +1,22 @@
+/**
+ * @file MainService.cpp
+ * @author Dae O Hong  (hong000321@gmail.com)
+ * @brief 메인 서비스 클래스 구현체 및 프로그램 진입점
+ * @version 0.1
+ * @date 2025-06-20
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #include "./service/UserManageService.h"
 #include "./service/ProductManageService.h"
 #include "./service/ShopService.h"
-#include "./ui/DisplayTitle.h"
-#include "./ui/DisplayTable.h"
-#include "./ui/DisplayMenu.h"
-#include "./ui/DisplayWidget.h"
-#include "./ui/UI_GLOBAL.h"
+#include "./view/DisplayTitle.h"
+#include "./view/DisplayTable.h"
+#include "./view/DisplayMenu.h"
+#include "./view/DisplayWidget.h"
+#include "./view/UI_GLOBAL.h"
 #include <windows.h>
 #include <iostream>
 
@@ -19,11 +30,19 @@ private:
     ShopService* m_shopService = nullptr;
     
     // 메뉴 선택 함수들
+    /**
+     * @brief 프로그램을 종료하는 메서드
+     * @return int 상태 코드 (BACK)
+     */
     int exitProgram() {
         std::cout << "프로그램을 종료합니다.\n";
         return BACK;  // 프로그램 종료를 위해 BACK 반환
     }
     
+    /**
+     * @brief 사용자 관리 서비스를 시작하는 메서드
+     * @return int 상태 코드 (OK)
+     */
     int startUserManagement() {
         if (!m_userManageService) {
             m_userManageService = new UserManageService();
@@ -33,6 +52,10 @@ private:
         return OK;
     }
     
+    /**
+     * @brief 상품 관리 서비스를 시작하는 메서드
+     * @return int 상태 코드 (OK)
+     */
     int startProductManagement() {
         if (!m_productManageService) {
             m_productManageService = new ProductManageService();
@@ -41,6 +64,10 @@ private:
         return OK;
     }
     
+    /**
+     * @brief 쇼핑 서비스를 시작하는 메서드
+     * @return int 상태 코드 (OK)
+     */
     int startShopService() {
         // ProductManageService가 없으면 먼저 생성
         if (!m_productManageService) {
@@ -62,6 +89,9 @@ private:
         {"쇼핑몰",         [this]() -> int { return startShopService(); }}
     };
 
+    /**
+     * @brief 메인 메뉴를 업데이트하는 메서드
+     */
     void updateMenu() {
         if (m_menu) {
             m_menu->setMenu(Select_Main_Menu);
@@ -71,6 +101,9 @@ private:
     }
 
 public:
+    /**
+     * @brief MainService 생성자 - 콘솔 환경 설정 및 UI 컴포넌트 초기화
+     */
     MainService(){
         // 콘솔 크기 설정
         CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -100,6 +133,9 @@ public:
         addWidget(m_menu);
     }
 
+    /**
+     * @brief MainService 소멸자 - 동적 할당된 서비스들을 정리
+     */
     ~MainService() {
         // ShopService 정리
         if (m_shopService) {
@@ -120,6 +156,9 @@ public:
         // DisplayWidget의 소멸자에서 자동으로 정리됨
     }
 
+    /**
+     * @brief 메인 서비스의 메인 루프를 실행하는 메서드
+     */
     void start() {
         m_title->pushTitle("메인 메뉴");
         
@@ -143,9 +182,12 @@ public:
         
         m_title->popTitle();
     }
-
 };
 
+/**
+ * @brief 프로그램의 진입점
+ * @return int 프로그램 종료 코드
+ */
 int main() {
     MainService* mainService = new MainService();
     mainService->start();
