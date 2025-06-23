@@ -1,7 +1,7 @@
 /**
  * @file UI_GLOBAL.h
  * @author Dae O Hong  (hong000321@gmail.com)
- * @brief text ui 출력을 위한 글로벌 설정값 정의
+ * @brief text view 출력을 위한 글로벌 설정값 정의
  * @version 0.1
  * @date 2025-06-20
  * 
